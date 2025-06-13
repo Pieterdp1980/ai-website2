@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chosen Palette: Calm Neutrality -->
+    <!-- Application Structure Plan: The SPA is structured as a narrative, top-down scrolly-telling experience. It guides the user from the core problem (industry inefficiency) to the solution (AI), quantifies the opportunity (interactive TAM data), analyzes the competition (incumbent SWOT), and provides a clear call to action (recommendations). This story-driven approach was chosen over mirroring the report's structure to make the complex information more digestible and engaging for a user who wants to quickly grasp the key takeaways and explore the data. A sticky navigation bar facilitates easy exploration between these thematic sections. -->
+    <!-- Visualization & Content Choices: 
+        - Inefficiencies: Goal=Inform. Method=Large stat cards (HTML/CSS). Justification=Immediately highlight key pain points from the report.
+        - AI Transformation: Goal=Organize/Compare. Method=HTML/CSS process flow diagram. Justification=Visually contrast the cumbersome manual process with the streamlined AI process for a high-impact comparison.
+        - Market Opportunity (TAM): Goal=Compare/Change. Method=Interactive Bar Chart (Chart.js) with a toggle for Global/USA views and a Line Chart (Chart.js) for growth. Justification=Allows users to actively explore the report's core quantitative data, making it more memorable and useful.
+        - AI Q&A Assistant: Goal=Inform. Method=LLM-powered text generation (Gemini API). Justification=Provides direct answers to user questions about the report's content, enhancing understanding and exploration.
+        - Incumbent Analysis: Goal=Compare. Method=Side-by-side list layout (HTML/CSS) with Unicode icons. Justification=Provides a quick, scannable summary of the competitive landscape's strengths and weaknesses.
+        - Recommendations: Goal=Organize/Inform. Method=Expandable accordion/card layout (HTML/JS). Justification=Presents actionable advice in a clean, interactive format that doesn't overwhelm the user.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>The AI-First Imperative: An Interactive Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4; /* Warm Neutral Background */
+            color: #4a4a4a; /* Dark Gray for text */
+        }
+        .text-primary { color: #2c3e50; } /* Dark Blue-Gray */
+        .text-secondary { color: #7f8c8d; } /* Lighter Gray */
+        .bg-accent { background-color: #c0392b; } /* Muted Red Accent */
+        .border-accent { border-color: #c0392b; }
+        .bg-card { background-color: #ffffff; }
+        .bg-card-alt { background-color: #ecf0f1; } /* Light Gray for contrast */
+
+        #mainNav a.active {
+            color: #c0392b;
+            font-weight: 700;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #c0392b;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav id="mainNav" class="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center items-center h-16">
+                <div class="flex space-x-6 md:space-x-10 text-sm md:text-base">
+                    <a href="#problem" class="text-secondary hover:text-primary transition-colors duration-300">The Problem</a>
+                    <a href="#catalyst" class="text-secondary hover:text-primary transition-colors duration-300">The Catalyst</a>
+                    <a href="#opportunity" class="text-secondary hover:text-primary transition-colors duration-300">The Opportunity</a>
+                    <a href="#ai-qa" class="text-secondary hover:text-primary transition-colors duration-300">AI Q&A</a>
+                    <a href="#landscape" class="text-secondary hover:text-primary transition-colors duration-300">The Landscape</a>
+                    <a href="#playbook" class="text-secondary hover:text-primary transition-colors duration-300">The Playbook</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="text-center py-20 px-4 bg-white">
+        <h1 class="text-4xl md:text-6xl font-extrabold text-primary leading-tight">The AI-First Imperative</h1>
+        <p class="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-secondary">
+            Transforming Real Estate Investment Accounting from a cost center burdened by digital debt into a strategic, AI-powered advantage.
+        </p>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <section id="problem" class="mb-24 scroll-mt-20">
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary">A Landscape Ripe for Disruption</h2>
+                <p class="mt-4 text-lg text-secondary">The real estate investment industry is hampered by historical inefficiencies. Manual processes, fragmented data, and a resistance to change have created a significant "digital debt," making the sector vulnerable and creating a clear opportunity for tech-driven transformation.</p>
+            </div>
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-card p-8 rounded-lg shadow-lg">
+                    <div class="text-5xl font-black text-accent">25%</div>
+                    <h3 class="mt-4 text-xl font-bold text-primary">Lack of Data Strategy</h3>
+                    <p class="mt-2 text-secondary">Only a quarter of real estate firms have an established data strategy, leading to pervasive inconsistency and preventing data-driven decision-making.</p>
+                </div>
+                <div class="bg-card p-8 rounded-lg shadow-lg">
+                    <div class="text-5xl font-black text-accent">70%+</div>
+                    <h3 class="mt-4 text-xl font-bold text-primary">Reliance on Manual Work</h3>
+                    <p class="mt-2 text-secondary">Core functions like transaction processing and document management are still heavily manual, increasing error rates and opportunity costs.</p>
+                </div>
+                <div class="bg-card p-8 rounded-lg shadow-lg">
+                    <div class="text-5xl font-black text-accent">> $2B</div>
+                    <h3 class="mt-4 text-xl font-bold text-primary">Sunk Legacy Costs</h3>
+                    <p class="mt-2 text-secondary">Major incumbents have high capital costs tied to legacy software, creating inertia and making it difficult to pivot to modern, agile systems.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="catalyst" class="mb-24 scroll-mt-20">
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary">The AI Catalyst: From Manual to Automated</h2>
+                <p class="mt-4 text-lg text-secondary">AI and LLMs offer a paradigm shift, automating core accounting functions to enhance speed, accuracy, and strategic focus. Below, see the transformation of a typical Accounts Payable process.</p>
+            </div>
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-card p-6 rounded-lg border-2 border-gray-200">
+                    <h3 class="text-2xl font-bold text-center text-primary">Manual Data Ingestion (The Past)</h3>
+                    <div class="mt-6 space-y-4">
+                        <div class="flex items-center p-3 bg-gray-100 rounded">
+                            <span class="text-2xl mr-4">📥</span>
+                            <div><span class="font-semibold">Data Collection:</span> Gathering trial balances, GLs, rent rolls in varied formats (Excel, PDF).</div>
+                        </div>
+                         <div class="text-center text-2xl text-secondary">↓</div>
+                        <div class="flex items-center p-3 bg-gray-100 rounded">
+                             <span class="text-2xl mr-4">📝</span>
+                            <div><span class="font-semibold">Manual Reconciliation:</span> Reconciling property manager data against master general ledger.</div>
+                        </div>
+                         <div class="text-center text-2xl text-secondary">↓</div>
+                        <div class="flex items-center p-3 bg-gray-100 rounded">
+                             <span class="text-2xl mr-4">🗺️</span>
+                            <div><span class="font-semibold">Mapping & Standardization:</span> Tedious manual mapping of accounts; converting disparate data formats.</div>
+                        </div>
+                         <div class="text-center text-2xl text-secondary">↓</div>
+                        <div class="flex items-center p-3 bg-gray-100 rounded">
+                             <span class="text-2xl mr-4">🔍</span>
+                            <div><span class="font-semibold">Error Resolution:</span> Manual identification and correction of data input and mapping errors.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-card p-6 rounded-lg border-2 border-accent">
+                    <h3 class="text-2xl font-bold text-center text-primary">AI-Powered Data Ingestion (The Future)</h3>
+                    <div class="mt-6 space-y-4">
+                        <div class="flex items-center p-3 bg-green-50 rounded">
+                            <span class="text-2xl mr-4">🤖</span>
+                            <div><span class="font-semibold">Intelligent Data Capture:</span> AI/OCR extracts data from diverse formats (TB, GL, rent rolls) instantly.</div>
+                        </div>
+                        <div class="text-center text-2xl text-green-500">↓</div>
+                        <div class="flex items-center p-3 bg-green-50 rounded">
+                            <span class="text-2xl mr-4">🧠</span>
+                            <div><span class="font-semibold">Automated Reconciliation:</span> AI matches and reconciles data across property managers and master GL.</div>
+                        </div>
+                        <div class="text-center text-2xl text-green-500">↓</div>
+                        <div class="flex items-center p-3 bg-green-50 rounded">
+                            <span class="text-2xl mr-4">⚡️</span>
+                            <div><span class="font-semibold">Dynamic Mapping & Standardization:</span> AI learns and applies mapping rules, auto-converts formats.</div>
+                        </div>
+                        <div class="text-center text-2xl text-green-500">↓</div>
+                        <div class="flex items-center p-3 bg-green-50 rounded">
+                            <span class="text-2xl mr-4">🎯</span>
+                            <div><span class="font-semibold">Proactive Anomaly Detection:</span> AI flags discrepancies for human review before data is uploaded.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="opportunity" class="mb-24 scroll-mt-20">
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary">Sizing the Market Opportunity</h2>
+                <p class="mt-4 text-lg text-secondary">The Total Addressable Market (TAM) for real estate accounting and related services is vast. The following visualizations break down the market size and highlight the significant portion that AI is poised to convert through efficiency gains.</p>
+            </div>
+            <div class="mt-12 bg-card p-6 rounded-lg shadow-lg">
+                <div class="flex justify-center items-center mb-6">
+                    <h3 class="text-2xl font-bold text-primary mr-6">Market Size Comparison (2025 Projections)</h3>
+                    <div class="flex space-x-2 bg-card-alt p-1 rounded-lg">
+                        <button id="globalBtn" class="px-4 py-2 text-sm font-semibold rounded-md bg-accent text-white">Global</button>
+                        <button id="usaBtn" class="px-4 py-2 text-sm font-semibold rounded-md bg-transparent text-secondary">USA</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="tamChart"></canvas>
+                </div>
+            </div>
+             <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-card p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold text-primary text-center mb-4">Global Real Estate Market Growth</h3>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-card p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold text-primary text-center mb-4">AI Conversion Potential</h3>
+                    <p class="text-center text-secondary mb-4">AI can automate a vast majority of routine tasks, leading to dramatic cost reductions.</p>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="conversionChart"></canvas>
+                    </div>
+                </div>
+             </div>
+        </section>
+
+        <section id="ai-qa" class="mb-24 scroll-mt-20">
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary">✨ AI Q&A Assistant ✨</h2>
+                <p class="mt-4 text-lg text-secondary">Ask any question about the "AI-First Imperative" report or the intersection of AI and real estate accounting, and our AI assistant will provide insights.</p>
+            </div>
+            <div class="mt-8 bg-card p-6 rounded-lg shadow-lg">
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <input type="text" id="qaInput" placeholder="e.g., What is 'digital debt'?" class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent/50 text-primary">
+                    <button id="askAIBtn" class="bg-accent text-white font-bold py-3 px-6 rounded-lg text-lg hover:opacity-90 transition-opacity flex items-center justify-center">
+                        Ask AI ✨
+                    </button>
+                </div>
+                <div id="qaSpinner" class="spinner mt-6 hidden"></div>
+                <div id="qaOutput" class="mt-8 p-6 bg-gray-50 rounded-lg text-left text-secondary min-h-[100px] flex items-center justify-center italic">
+                    Your AI-powered answers will appear here.
+                </div>
+                 <div id="qaErrorMessage" class="text-red-600 mt-4 text-center hidden">
+                    An error occurred. Please try again.
+                </div>
+            </div>
+        </section>
+        
+        <section id="landscape" class="mb-24 scroll-mt-20">
+             <div class="text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary">The Competitive Landscape</h2>
+                <p class="mt-4 text-lg text-secondary">Established incumbents like State Street, BNY Mellon, and SS&C possess formidable strengths. However, their size, legacy systems, and organizational inertia also create critical vulnerabilities that agile, AI-native challengers can exploit.</p>
+            </div>
+            <div class="mt-12 bg-card p-8 rounded-lg shadow-lg">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-3xl font-bold text-green-600 mb-6 text-center">Incumbent Strengths ✅</h3>
+                        <ul class="space-y-4">
+                            <li class="p-4 bg-green-50 rounded-lg"><strong class="text-green-800">Immense Scale:</strong> Trillions in assets under administration provide massive datasets and an existing client base.</li>
+                            <li class="p-4 bg-green-50 rounded-lg"><strong class="text-green-800">Deep Capital:</strong> Billions are invested annually into technology and operational efficiency.</li>
+                            <li class="p-4 bg-green-50 rounded-lg"><strong class="text-green-800">Established Trust:</strong> Decades of experience and regulatory adherence create significant client trust.</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h3 class="text-3xl font-bold text-red-600 mb-6 text-center">Incumbent Vulnerabilities ❌</h3>
+                        <ul class="space-y-4">
+                            <li class="p-4 bg-red-50 rounded-lg"><strong class="text-red-800">Legacy System Debt:</strong> Fragmented, outdated systems hinder agile adoption of new AI solutions.</li>
+                             <li class="p-4 bg-red-50 rounded-lg"><strong class="text-red-800">Data Fragmentation:</strong> Inconsistent data from mergers and silos impedes AI effectiveness.</li>
+                             <li class="p-4 bg-red-50 rounded-lg"><strong class="text-red-800">Organizational Inertia:</strong> Large bureaucracies are often slow to change and adapt to disruptive technology.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="playbook" class="scroll-mt-20">
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary">The AI-First Playbook</h2>
+                <p class="mt-4 text-lg text-secondary">For early movers looking to capitalize on this opportunity, a clear strategic playbook is essential. The following recommendations provide a roadmap for building a disruptive, AI-native business in this space.</p>
+            </div>
+            <div id="recommendations-container" class="mt-12 max-w-4xl mx-auto space-y-4">
+            </div>
+        </section>
+    </main>
+    
+    <footer class="mt-24 bg-card-alt py-8">
+        <div class="container mx-auto px-4 text-center text-secondary text-sm">
+            <p>&copy; 2025 Interactive Report. All rights reserved.</p>
+            <p class="mt-1">Content synthesized from the report: "The AI-First Imperative: Transforming Real Estate Investment Accounting".</p>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const textPrimary = '#2c3e50';
+            const textSecondary = '#7f8c8d';
+            const accentColor = '#c0392b';
+            const accentColorMuted = 'rgba(192, 57, 43, 0.5)';
+            const secondaryAccent = '#2980b9';
+            const secondaryAccentMuted = 'rgba(41, 128, 185, 0.5)';
+
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                return Array.isArray(label) ? label.join(' ') : label;
+            };
+
+            const wrapLabel = (str, maxWidth = 16) => {
+                if (typeof str !== 'string' || str.length <= maxWidth) return str;
+                const words = str.split(' ');
+                const lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + ' ' + word).trim().length > maxWidth && currentLine.length > 0) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = (currentLine + ' ' + word).trim();
+                    }
+                });
+                if (currentLine.length) lines.push(currentLine);
+                return lines;
+            };
+
+            const baseChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#ffffff',
+                        titleColor: textPrimary,
+                        bodyColor: textSecondary,
+                        borderColor: '#e0e0e0',
+                        borderWidth: 1,
+                        callbacks: { title: tooltipTitleCallback }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: textSecondary, font: { size: 12 } },
+                        grid: { color: '#ecf0f1' }
+                    },
+                    x: {
+                        ticks: { color: textSecondary, font: { size: 12 } },
+                        grid: { display: false }
+                    }
+                }
+            };
+            
+            const tamData = {
+                global: {
+                    labels: ['Accounting Services', 'RE Consulting', 'Fund Management'],
+                    values: [640.8, 125.7, 145] 
+                },
+                usa: {
+                    labels: ['Accounting Services', 'RE Consulting', 'REITs Market'],
+                    values: [145.5, 90.6, 243.7]
+                }
+            };
+
+            const tamChartCtx = document.getElementById('tamChart').getContext('2d');
+            let tamChart = new Chart(tamChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: tamData.global.labels.map(l => wrapLabel(l)),
+                    datasets: [{
+                        label: 'Market Size (USD Billions)',
+                        data: tamData.global.values,
+                        backgroundColor: accentColorMuted,
+                        borderColor: accentColor,
+                        borderWidth: 2
+                    }]
+                },
+                options: baseChartOptions
+            });
+
+            const globalBtn = document.getElementById('globalBtn');
+            const usaBtn = document.getElementById('usaBtn');
+
+            function updateTamChart(market) {
+                tamChart.data.labels = tamData[market].labels.map(l => wrapLabel(l));
+                tamChart.data.datasets[0].data = tamData[market].values;
+                tamChart.update();
+
+                if(market === 'global') {
+                    globalBtn.classList.add('bg-accent', 'text-white');
+                    globalBtn.classList.remove('bg-transparent', 'text-secondary');
+                    usaBtn.classList.remove('bg-accent', 'text-white');
+                    usaBtn.classList.add('bg-transparent', 'text-secondary');
+                } else {
+                    usaBtn.classList.add('bg-accent', 'text-white');
+                    usaBtn.classList.remove('bg-transparent', 'text-secondary');
+                    globalBtn.classList.remove('bg-accent', 'text-white');
+                    globalBtn.classList.add('bg-transparent', 'text-secondary');
+                }
+            }
+            globalBtn.addEventListener('click', () => updateTamChart('global'));
+            usaBtn.addEventListener('click', () => updateTamChart('usa'));
+
+
+            const growthChartCtx = document.getElementById('growthChart').getContext('2d');
+            new Chart(growthChartCtx, {
+                type: 'line',
+                data: {
+                    labels: ['2024', '2025', '2033'],
+                    datasets: [{
+                        label: 'Global Real Estate Market Size (USD Trillions)',
+                        data: [4.06, 4.36, 7.84],
+                        fill: true,
+                        borderColor: secondaryAccent,
+                        backgroundColor: secondaryAccentMuted,
+                        tension: 0.1
+                    }]
+                },
+                options: { ...baseChartOptions, plugins: { ...baseChartOptions.plugins, legend: { display: true, labels: {color: textPrimary} } } }
+            });
+
+            const conversionChartCtx = document.getElementById('conversionChart').getContext('2d');
+            new Chart(conversionChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Potential Cost Reduction', 'Remaining Costs'],
+                    datasets: [{
+                        label: 'Cost Reduction Potential via LLMs',
+                        data: [40, 60],
+                        backgroundColor: [accentColor, '#ecf0f1'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                    }]
+                },
+                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: {color: textPrimary} },
+                        tooltip: { ...baseChartOptions.plugins.tooltip }
+                    }
+                }
+            });
+
+
+            const recommendations = [
+                { title: 'Embrace a Native AI-First Architecture', content: 'Build operating models around AI from the ground up, rather than retrofitting. This creates a fundamental structural advantage in speed, scalability, and efficiency that is difficult for incumbents to replicate.' },
+                { title: 'Target High-Value Use Cases', content: 'Focus initial deployments on specific, data-intensive functions like trial balance processing or AP automation to deliver immediate, measurable ROI and build momentum.' },
+                { title: 'Prioritize Robust Data Governance', content: 'Establish stringent data quality, privacy, and security protocols from inception. This builds client trust and mitigates regulatory and reputational risks in a data-sensitive industry.' },
+                { title: 'Cultivate an Augmented Human Workforce', content: 'Develop a talent strategy that focuses on augmenting human capabilities with AI. Invest in upskilling programs to create a workforce capable of leveraging AI for strategic insights.' },
+                { title: 'Adopt an Agile & Iterative Approach', content: 'Start with small, well-defined pilot projects to test solutions and gather feedback. This minimizes risk and allows for continuous learning, adaptation, and scaling with purpose.' },
+                { title: 'Form Strategic Partnerships', content: 'Collaborate with specialized AI tech providers and cybersecurity experts. This provides access to cutting-edge capabilities and shared expertise, enabling effective competition.' }
+            ];
+
+            const recContainer = document.getElementById('recommendations-container');
+            recommendations.forEach((rec, index) => {
+                const div = document.createElement('div');
+                div.classList.add('bg-card', 'rounded-lg', 'shadow-md', 'overflow-hidden');
+                div.innerHTML = `
+                    <button class="w-full text-left p-4 flex justify-between items-center hover:bg-gray-50 focus:outline-none">
+                        <span class="text-lg font-semibold text-primary">${rec.title}</span>
+                        <span class="text-accent text-2xl transform transition-transform duration-300">+</span>
+                    </button>
+                    <div class="px-4 pb-4 text-secondary max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                        ${rec.content}
+                    </div>
+                `;
+                recContainer.appendChild(div);
+
+                const button = div.querySelector('button');
+                const content = div.querySelector('div');
+                const icon = div.querySelector('span:last-child');
+                button.addEventListener('click', () => {
+                    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+                    if (isOpen) {
+                        content.style.maxHeight = '0px';
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(45deg)';
+                    }
+                });
+            });
+
+            const navLinks = document.querySelectorAll('#mainNav a');
+            const sections = document.querySelectorAll('main section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').substring(1) === current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            // Gemini API Integration for AI Q&A Assistant
+            const qaInput = document.getElementById('qaInput');
+            const askAIBtn = document.getElementById('askAIBtn');
+            const qaOutput = document.getElementById('qaOutput');
+            const qaSpinner = document.getElementById('qaSpinner');
+            const qaErrorMessage = document.getElementById('qaErrorMessage');
+
+            askAIBtn.addEventListener('click', async () => {
+                const question = qaInput.value.trim();
+                if (!question) {
+                    qaOutput.innerHTML = '<p class="text-red-500">Please type your question.</p>';
+                    qaOutput.classList.remove('italic', 'text-gray-500');
+                    return;
+                }
+
+                qaOutput.innerHTML = '';
+                qaOutput.classList.add('italic', 'text-gray-500');
+                qaSpinner.style.display = 'block';
+                qaErrorMessage.style.display = 'none';
+
+                let chatHistory = [];
+                // Crafting a prompt that encourages the LLM to act as an expert and refer to the report's themes
+                const prompt = `As an expert in the "AI-First Imperative: Transforming Real Estate Investment Accounting" report, answer the following question. Base your answer on the insights presented in such a report, focusing on real estate investment accounting, AI, LLMs, market trends, and competitive landscape. If the question is outside the scope of the report or real estate accounting, state that you cannot answer it from the report's context.
+
+Question: "${question}"`;
+
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        qaOutput.innerHTML = text.replace(/\n/g, '<br>');
+                        qaOutput.classList.remove('italic', 'text-gray-500');
+                    } else {
+                        qaOutput.innerHTML = '<p>No AI response generated. Please try rephrasing your question.</p>';
+                        qaOutput.classList.add('italic', 'text-gray-500');
+                    }
+                } catch (error) {
+                    console.error('Error calling Gemini API for Q&A:', error);
+                    qaErrorMessage.style.display = 'block';
+                    qaOutput.innerHTML = '<p>Failed to get AI answer due to a network error. Please check your connection or try again later.</p>';
+                    qaOutput.classList.add('italic', 'text-gray-500');
+                } finally {
+                    qaSpinner.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
